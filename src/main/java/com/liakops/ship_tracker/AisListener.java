@@ -39,7 +39,6 @@ public class AisListener implements WebSocket.Listener {
 
     @Override
     public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
-        // TODO: μετάτρεψε τα bytes σε String (UTF-8) και τύπωσέ το
         CharBuffer characterBuffer = StandardCharsets.UTF_8.decode(data);
         System.out.println(characterBuffer.toString());
         webSocket.request(1);
@@ -48,7 +47,6 @@ public class AisListener implements WebSocket.Listener {
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-        // TODO: τύπωσε το error.getMessage()
         System.out.println("Error:" + error.getMessage());
 
     }
