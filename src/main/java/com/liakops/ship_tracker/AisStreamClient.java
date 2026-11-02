@@ -30,7 +30,7 @@ public class AisStreamClient implements CommandLineRunner {
         κάποια στιγμή θα έχεις WebSocket». Με το .join() περιμένεις μέχρι
         να ανοίξει πραγματικά
         */
-        AisListener aisListener = new AisListener();
+        AisListener aisListener = new AisListener(apiKey);
         WebSocket ws = builder.buildAsync(uri, aisListener).join();
 
 
