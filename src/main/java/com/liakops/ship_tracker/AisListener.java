@@ -9,16 +9,23 @@ public class AisListener implements WebSocket.Listener {
 
     @Override
     public void onOpen(WebSocket webSocket) {
-        // TODO: στείλε το subscription JSON -> webSocket.sendText(json, true)
-        // TODO: ζήτα το πρώτο μήνυμα -> webSocket.request(1)
+        System.out.println("Connected");
     }
 
     @Override
-    public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
-        // TODO: μετάτρεψε τα bytes σε String (UTF-8) και τύπωσέ το
-        // TODO: ζήτα το επόμενο μήνυμα -> webSocket.request(1)
+    public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
+        // TODO: τύπωσε το statusCode και το reason
+        System.out.println(statusCode);
+        System.out.println(reason);
+
         return null;
     }
 
-    // TODO: υλοποίησε και onError(...) και onClose(...) ώστε να τυπώνουν τι έγινε
+    @Override
+    public void onError(WebSocket webSocket, Throwable error) {
+        // TODO: τύπωσε το error.getMessage()
+        System.out.println(error.getMessage());
+
+    }
+
 }
