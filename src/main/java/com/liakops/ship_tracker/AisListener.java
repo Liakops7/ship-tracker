@@ -10,13 +10,14 @@ public class AisListener implements WebSocket.Listener {
     @Override
     public void onOpen(WebSocket webSocket) {
         System.out.println("Connected");
+        webSocket.request(1);
     }
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
         // TODO: τύπωσε το statusCode και το reason
-        System.out.println(statusCode);
-        System.out.println(reason);
+        System.out.println("Status code:" + statusCode);
+        System.out.println("Reason:" +reason);
 
         return null;
     }
@@ -24,7 +25,7 @@ public class AisListener implements WebSocket.Listener {
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
         // TODO: τύπωσε το error.getMessage()
-        System.out.println(error.getMessage());
+        System.out.println("Error:"+ error.getMessage());
 
     }
 
