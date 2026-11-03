@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Metadata(
     @JsonProperty("MMSI") long mmsi,
-    @JsonProperty("ShipName") long shipName,
+    @JsonProperty("ShipName") String shipName,
     @JsonProperty("latitude") double latitude,
     @JsonProperty("longitude") double longitude,
     @JsonProperty("time_utc") String timeUTC
