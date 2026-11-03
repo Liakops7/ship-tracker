@@ -30,7 +30,6 @@ public class AisListener implements WebSocket.Listener {
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-        // TODO: τύπωσε το statusCode και το reason
         System.out.println("Status code:" + statusCode);
         System.out.println("Reason:" + reason);
 
