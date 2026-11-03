@@ -19,10 +19,10 @@ public class AisListener implements WebSocket.Listener {
     public void onOpen(WebSocket webSocket) {
         System.out.println("Connected");
 
-        String coord = "[ [ [35.0, 22.5], [41.0, 28.5] ] ]";
+        String aegeanBox = "[ [ [35.0, 22.5], [41.0, 28.5] ] ]";
         String json = """
                    {"APIKey": "%s", "BoundingBoxes": %s, "FilterMessageTypes": ["%s"]}
-                """.formatted(apiKey, coord, "PositionReport");
+                """.formatted(apiKey, aegeanBox, "PositionReport");
 
         webSocket.sendText(json, true);
         webSocket.request(1);
