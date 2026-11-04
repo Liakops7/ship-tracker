@@ -7,7 +7,6 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletionStage;
 
@@ -16,6 +15,7 @@ public class AisListener implements WebSocket.Listener {
 
     private final String apiKey;
     private final JsonMapper mapper = JsonMapper.builder().build();
+
     public AisListener(String apiKey) {
         this.apiKey = apiKey;
     }
@@ -44,36 +44,36 @@ public class AisListener implements WebSocket.Listener {
     @Override
     public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
         // 1. bytes -> String (αυτό το είχες ήδη)
-            String json = StandardCharsets.UTF_8.decode(data).toString();
+        String json = StandardCharsets.UTF_8.decode(data).toString();
 
-            try {
-                // 2. String -> αντικείμενο AisMessage
-                //    "Διάβασε αυτό το JSON και φτιάξε μου ένα AisMessage"
-                AisMessage message = mapper.readValue(json, AisMessage.class);
+        try {
+            // 2. String -> αντικείμενο AisMessage
+            //    "Διάβασε αυτό το JSON και φτιάξε μου ένα AisMessage"
+            AisMessage message = mapper.readValue(json, AisMessage.class);
 
-                // 3. Κράτα μόνο τα μηνύματα θέσης (η επιβεβαίωση subscription δεν μας ενδιαφέρει)
-                //    Γράφουμε "PositionReport".equals(...) και όχι ανάποδα,
-                //    ώστε να μη σκάσει αν το messageType είναι null
-                if ("PositionReport".equals(message.messageType())) {
+            // 3. Κράτα μόνο τα μηνύματα θέσης (η επιβεβαίωση subscription δεν μας ενδιαφέρει)
+            //    Γράφουμε "PositionReport".equals(...) και όχι ανάποδα,
+            //    ώστε να μη σκάσει αν το messageType είναι null
+            if ("PositionReport".equals(message.messageType())) {
 
-                    // 4. Πάρε το εσωτερικό αντικείμενο με τα στοιχεία του πλοίου
-                    Metadata meta = message.metaData();
+                // 4. Πάρε το εσωτερικό αντικείμενο με τα στοιχεία του πλοίου
+                Metadata meta = message.metaData();
 
-                    // 5. Τύπωσε μια καθαρή γραμμή — trim() για να φύγουν τα κενά από το όνομα
-                    System.out.println(meta.shipName().trim()
-                            + " (" + meta.mmsi() + ") @ "
-                            + meta.latitude() + ", " + meta.longitude()
-                            + " — " + meta.timeUTC());
-                }
-            } catch (JacksonException e) {
-                // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
-                // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
-                System.out.println("Could not parse message: " + e.getMessage());
+                // 5. Τύπωσε μια καθαρή γραμμή — trim() για να φύγουν τα κενά από το όνομα
+                System.out.println(meta.shipName().trim()
+                        + " (" + meta.mmsi() + ") @ "
+                        + meta.latitude() + ", " + meta.longitude()
+                        + " — " + meta.timeUTC());
             }
+        } catch (JacksonException e) {
+            // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
+            // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
+            System.out.println("Could not parse message: " + e.getMessage());
+        }
 
-            // 6. Ζήτα το επόμενο μήνυμα — ΕΞΩ από το try, ώστε να γίνεται πάντα
-            webSocket.request(1);
-            return null;
+        // 6. Ζήτα το επόμενο μήνυμα — ΕΞΩ από το try, ώστε να γίνεται πάντα
+        webSocket.request(1);
+        return null;
     }
 
     @Override
