@@ -15,10 +15,10 @@ public record Eta(
                 month <= 12 &&
                 day >= 1 &&
                 day <= 31 &&
-                hour >= 1 &&
-                hour <= 24 &&
-                minute >= 1 &&
-                minute <= 60;
+                hour >= 0 &&
+                hour <= 23 &&
+                minute >= 0 &&
+                minute <= 59;
 
 
 

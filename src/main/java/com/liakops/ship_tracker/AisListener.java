@@ -78,10 +78,12 @@ public class AisListener implements WebSocket.Listener {
                 ShipStaticData staticData = message.payload().shipStaticData();
                 System.out.println(
                         message.metaData().shipName().trim()              // όνομα
-                        + ", " + staticData.destination().trim()          // προορισμός
-                        + ", " + staticData.eta()                         // ETA
-                        + ", Piraeus? " + PiraeusMatcher.matches(staticData.destination())   // ο έλεγχός μας
-                );            }
+                                + ", " + staticData.destination().trim()          // προορισμός
+                                + ", " + staticData.eta()                         // ETA
+                                + ", Piraeus? " + PiraeusMatcher.matches(staticData.destination())   // ο έλεγχός μας
+                                + ", valid ETA? " + staticData.eta().isValid()
+                );
+            }
         } catch (DateTimeParseException | JacksonException e) {
             // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
             // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
