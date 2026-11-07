@@ -4,7 +4,10 @@ import com.liakops.ship_tracker.model.Metadata;
 import com.liakops.ship_tracker.model.Vessel;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,5 +21,18 @@ public class VesselStore {
 
     public Collection<Vessel> findAll() {
         return vessels.values();
+    }
+
+    public List<Vessel> findRecent(Duration maxAge)
+
+    {
+        Instant now = Instant.now();
+        Instant cutoff = now.minus(maxAge);
+
+        List<Vessel> recentVessels = vessels.values().stream()
+                .filter(vessel -> vessel.lastSeen().isAfter(cutoff))
+                .toList();
+
+        return recentVessels;
     }
 }
