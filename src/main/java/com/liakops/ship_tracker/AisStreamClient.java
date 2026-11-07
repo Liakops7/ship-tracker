@@ -1,5 +1,6 @@
 package com.liakops.ship_tracker;
 
+import com.liakops.ship_tracker.service.VesselStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -8,11 +9,18 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 
+
 @Component
 public class AisStreamClient implements CommandLineRunner {
 
     @Value("${aisstream.api-key}")
     private String apiKey;
+
+    private final VesselStore vesselStore;
+
+    public AisStreamClient(VesselStore vesselStore) {
+        this.vesselStore = vesselStore;
+    }
 
     @Override
     public void run(String... args) throws Exception {
@@ -30,7 +38,7 @@ public class AisStreamClient implements CommandLineRunner {
         κάποια στιγμή θα έχεις WebSocket». Με το .join() περιμένεις μέχρι
         να ανοίξει πραγματικά
         */
-        AisListener aisListener = new AisListener(apiKey);
+        AisListener aisListener = new AisListener(apiKey, vesselStore);
         WebSocket ws = builder.buildAsync(uri, aisListener).join();
 
 

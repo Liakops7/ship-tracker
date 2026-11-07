@@ -2,6 +2,7 @@ package com.liakops.ship_tracker;
 
 import com.liakops.ship_tracker.model.AisMessage;
 import com.liakops.ship_tracker.model.Metadata;
+import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -15,9 +16,12 @@ public class AisListener implements WebSocket.Listener {
 
     private final String apiKey;
     private final JsonMapper mapper = JsonMapper.builder().build();
+    private final VesselStore vesselStore;
 
-    public AisListener(String apiKey) {
+    public AisListener(String apiKey, VesselStore vesselStore) {
+
         this.apiKey = apiKey;
+        this.vesselStore = vesselStore;
     }
 
     @Override
@@ -58,6 +62,8 @@ public class AisListener implements WebSocket.Listener {
 
                 // 4. Πάρε το εσωτερικό αντικείμενο με τα στοιχεία του πλοίου
                 Metadata meta = message.metaData();
+
+                vesselStore.save(meta);
 
                 // 5. Τύπωσε μια καθαρή γραμμή — trim() για να φύγουν τα κενά από το όνομα
                 System.out.println(meta.shipName().trim()
