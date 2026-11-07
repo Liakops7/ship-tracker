@@ -4,6 +4,7 @@ import com.liakops.ship_tracker.model.AisMessage;
 import com.liakops.ship_tracker.model.Metadata;
 import com.liakops.ship_tracker.model.ShipStaticData;
 import com.liakops.ship_tracker.model.Vessel;
+import com.liakops.ship_tracker.service.PiraeusMatcher;
 import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
@@ -75,8 +76,12 @@ public class AisListener implements WebSocket.Listener {
                         + " — " + vessel.lastSeen());
             } else if ("ShipStaticData".equals(message.messageType())) {
                 ShipStaticData staticData = message.payload().shipStaticData();
-                System.out.println("MMSI: " + message.metaData().mmsi() + "Destination: " + staticData.destination().trim() + "ETA :" + staticData.eta());
-            }
+                System.out.println(
+                        message.metaData().shipName().trim()              // όνομα
+                        + ", " + staticData.destination().trim()          // προορισμός
+                        + ", " + staticData.eta()                         // ETA
+                        + ", Piraeus? " + PiraeusMatcher.matches(staticData.destination())   // ο έλεγχός μας
+                );            }
         } catch (DateTimeParseException | JacksonException e) {
             // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
             // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
