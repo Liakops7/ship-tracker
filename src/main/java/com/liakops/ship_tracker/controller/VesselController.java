@@ -23,7 +23,7 @@ public class VesselController {
 
         return vesselStore.findAll()
                 .stream()
-                .map(Vessel -> VesselResponse.from(Vessel))
+                .map(vessel -> VesselResponse.from(Vessel))
                 .toList();
     }
 
