@@ -10,4 +10,18 @@ public record Eta(
         @JsonProperty("Hour") int hour,
         @JsonProperty("Minute") int minute
 ) {
+    public boolean isValid() {
+        boolean flag = month >= 1 &&
+                month <= 12 &&
+                day >= 1 &&
+                day <= 31 &&
+                hour >= 1 &&
+                hour <= 24 &&
+                minute >= 1 &&
+                minute <= 60;
+
+
+
+        return flag;
+    }
 }
