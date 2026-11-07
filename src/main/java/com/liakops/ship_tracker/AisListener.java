@@ -72,8 +72,7 @@ public class AisListener implements WebSocket.Listener {
                         + " (" + vessel.mmsi() + ") @ "
                         + vessel.latitude() + ", " + vessel.longitude()
                         + " — " + vessel.lastSeen());
-            }
-            else if ("ShipStaticData".equals(message.messageType())) {
+            } else if ("ShipStaticData".equals(message.messageType())) {
                 System.out.println("STATIC: " + json);
             }
         } catch (DateTimeParseException | JacksonException e) {
