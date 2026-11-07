@@ -2,6 +2,7 @@ package com.liakops.ship_tracker;
 
 import com.liakops.ship_tracker.model.AisMessage;
 import com.liakops.ship_tracker.model.Metadata;
+import com.liakops.ship_tracker.model.ShipStaticData;
 import com.liakops.ship_tracker.model.Vessel;
 import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
@@ -73,7 +74,8 @@ public class AisListener implements WebSocket.Listener {
                         + vessel.latitude() + ", " + vessel.longitude()
                         + " — " + vessel.lastSeen());
             } else if ("ShipStaticData".equals(message.messageType())) {
-                System.out.println("STATIC: " + json);
+                ShipStaticData staticData = message.payload().shipStaticData();
+                System.out.println("Name: " + message.metaData().mmsi() + "Destination: " + staticData.destination() + "ETA :" + staticData.eta());
             }
         } catch (DateTimeParseException | JacksonException e) {
             // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.

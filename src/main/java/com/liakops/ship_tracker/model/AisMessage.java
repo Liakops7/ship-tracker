@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record AisMessage(
         @JsonProperty("MetaData") Metadata metaData,
-        @JsonProperty("MessageType") String messageType
+        @JsonProperty("MessageType") String messageType,
+        @JsonProperty("Message") AisPayload payload
 ) {
 }
