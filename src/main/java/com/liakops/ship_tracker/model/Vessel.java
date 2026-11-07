@@ -14,7 +14,7 @@ public record Vessel (
         Instant lastSeen
 ){
     private static final DateTimeFormatter AIS_TIME_FORMAT = new DateTimeFormatterBuilder()
-            .appendPattern("dd-MM-yyyy HH:mm:ss")
+            .appendPattern("yyyy-MM-dd HH:mm:ss")
             .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
             .appendPattern(" Z")
             .toFormatter();
