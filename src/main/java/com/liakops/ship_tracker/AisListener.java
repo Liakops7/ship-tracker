@@ -82,6 +82,7 @@ public class AisListener implements WebSocket.Listener {
                                 + ", " + staticData.eta()                         // ETA
                                 + ", Piraeus? " + PiraeusMatcher.matches(staticData.destination())   // ο έλεγχός μας
                                 + ", valid ETA? " + staticData.eta().isValid()
+                                + ", at 2026: " + staticData.eta().atYear(2026)
                 );
             }
         } catch (DateTimeParseException | JacksonException e) {

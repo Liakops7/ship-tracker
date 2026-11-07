@@ -3,6 +3,10 @@ package com.liakops.ship_tracker.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Eta(
         @JsonProperty("Month") int month,
@@ -21,7 +25,12 @@ public record Eta(
                 minute <= 59;
 
 
-
         return flag;
+    }
+
+    public Instant atYear(int year) {
+        LocalDateTime now = LocalDateTime.now();
+        now.toInstant(ZoneOffset.UTC);
+
     }
 }
