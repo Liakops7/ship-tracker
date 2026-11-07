@@ -32,9 +32,9 @@ public class AisListener implements WebSocket.Listener {
 
         String aegeanBox = "[ [ [35.0, 22.5], [41.0, 28.5] ] ]";
         String json = """
-                   {"APIKey": "%s", "BoundingBoxes": %s, "FilterMessageTypes": ["%s"]}
-                """.formatted(apiKey, aegeanBox, "PositionReport");
-
+                   {"APIKey": "%s", "BoundingBoxes": %s, "FilterMessageTypes": ["PositionReport", "ShipStaticData"]}
+                """.formatted(apiKey, aegeanBox);
+        System.out.println(json.replace(apiKey, "***"));   // τυπώνει το subscription ΧΩΡΙΣ το key
         webSocket.sendText(json, true);
         webSocket.request(1);
     }
