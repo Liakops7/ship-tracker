@@ -3,8 +3,6 @@ package com.liakops.ship_tracker.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.Instant;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Metadata(
     @JsonProperty("MMSI") long mmsi,

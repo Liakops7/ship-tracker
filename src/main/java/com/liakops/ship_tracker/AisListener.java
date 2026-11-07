@@ -2,10 +2,12 @@ package com.liakops.ship_tracker;
 
 import com.liakops.ship_tracker.model.AisMessage;
 import com.liakops.ship_tracker.model.Metadata;
+import com.liakops.ship_tracker.model.Vessel;
 import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.io.IOException;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -63,19 +65,23 @@ public class AisListener implements WebSocket.Listener {
                 // 4. Πάρε το εσωτερικό αντικείμενο με τα στοιχεία του πλοίου
                 Metadata meta = message.metaData();
 
-                vesselStore.save(meta);
+                Vessel vessel = Vessel.from(meta);
 
                 // 5. Τύπωσε μια καθαρή γραμμή — trim() για να φύγουν τα κενά από το όνομα
-                System.out.println(meta.shipName().trim()
-                        + " (" + meta.mmsi() + ") @ "
-                        + meta.latitude() + ", " + meta.longitude()
-                        + " — " + meta.timeUTC());
+                System.out.println(vessel.name()
+                        + " (" + vessel.mmsi() + ") @ "
+                        + vessel.latitude() + ", " + vessel.longitude()
+                        + " — " + vessel.lastSeen());
             }
-        } catch (JacksonException e) {
+        } catch ( NumberFormatException | JacksonException e) {
             // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
             // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
-            System.out.println("Could not parse message: " + e.getMessage());
+            System.out.println("Problem: " + e.getMessage());
+
+
         }
+
+
 
         // 6. Ζήτα το επόμενο μήνυμα — ΕΞΩ από το try, ώστε να γίνεται πάντα
         webSocket.request(1);

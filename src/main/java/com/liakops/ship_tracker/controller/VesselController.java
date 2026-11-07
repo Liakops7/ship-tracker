@@ -1,7 +1,7 @@
 package com.liakops.ship_tracker.controller;
 
 
-import com.liakops.ship_tracker.model.Metadata;
+import com.liakops.ship_tracker.model.Vessel;
 import com.liakops.ship_tracker.service.VesselStore;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +18,7 @@ public class VesselController {
     }
 
     @GetMapping("/vessels/aegean")
-    public Collection<Metadata> getAegeanVessels(){
+    public Collection<Vessel> getAegeanVessels(){
 
         return vesselStore.findAll();
     }

@@ -1,6 +1,7 @@
 package com.liakops.ship_tracker.service;
 
 import com.liakops.ship_tracker.model.Metadata;
+import com.liakops.ship_tracker.model.Vessel;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -9,13 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class VesselStore {
-    private final Map<Long, Metadata> vessels = new ConcurrentHashMap<>();
+    private final Map<Long, Vessel> vessels = new ConcurrentHashMap<>();
 
-    public void save (Metadata metaData) {
-        vessels.put(metaData.mmsi(), metaData);
+    public void save (Vessel vessel) {
+        vessels.put(vessel.mmsi(), vessel);
     }
 
-    public Collection<Metadata> findAll() {
+    public Collection<Vessel> findAll() {
         return vessels.values();
     }
 }
