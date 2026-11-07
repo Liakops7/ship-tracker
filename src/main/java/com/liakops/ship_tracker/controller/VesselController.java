@@ -11,7 +11,7 @@ import java.util.Collection;
 @RestController // κλάση που απαντά σε HTTP requests και επιστρέφει JSON
 public class VesselController {
 
-    private VesselStore vesselStore;
+    private final VesselStore vesselStore;
 
     public VesselController(VesselStore vesselStore) {
             this.vesselStore = vesselStore;
