@@ -1,12 +1,13 @@
 package com.liakops.ship_tracker.controller;
 
 
+import com.liakops.ship_tracker.dto.VesselResponse;
 import com.liakops.ship_tracker.model.Vessel;
 import com.liakops.ship_tracker.service.VesselStore;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController // κλάση που απαντά σε HTTP requests και επιστρέφει JSON
 public class VesselController {
@@ -18,9 +19,12 @@ public class VesselController {
     }
 
     @GetMapping("/vessels/aegean")
-    public Collection<Vessel> getAegeanVessels(){
+    public List<VesselResponse> getAegeanVessels(){
 
-        return vesselStore.findAll();
+        return vesselStore.findAll()
+                .stream()
+                .map(Vessel -> from(Vessel))
+                .toList();
     }
 
 }
