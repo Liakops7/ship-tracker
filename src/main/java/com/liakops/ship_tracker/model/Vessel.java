@@ -24,4 +24,8 @@ public record Vessel(
         return OffsetDateTime.parse(clean, AIS_TIME_FORMAT).toInstant();
 
     }
+
+    public static Vessel from (Metadata meta){
+        return new Vessel(meta.mmsi(), meta.shipName().trim(), meta.latitude(), meta.longitude(), meta.timeUTC());
+    }
 }
