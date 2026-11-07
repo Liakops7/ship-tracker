@@ -15,7 +15,7 @@ public record VesselResponse(
         String lastSeen
 ) {
 
-    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH/mm/ss");
+    private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     private static final ZoneId ATHENS = ZoneId.of("Europe/Athens");
 
@@ -24,18 +24,12 @@ public record VesselResponse(
 
         String dateTime = athensTime.format(DISPLAY_FORMAT);
 
-        int offsetHours = athensTime.getOffset().getTotalSeconds();
+        int offsetHours = athensTime.getOffset().getTotalSeconds()/3600;
 
-        return dateTime + "UTC +" + offsetHours;
+        return dateTime + " UTC +" + offsetHours;
     }
 
     public static VesselResponse from(Vessel vessel) {
-        return new VesselResponse(
-            long mmsi,
-            String name,
-            double latitude,
-            double longitude,
-            String lastSeen.formatForAthens()
-        )
+        return new VesselResponse( vessel.mmsi(), vessel.name(), vessel.latitude(), vessel.longitude(), formatForAthens(vessel.lastSeen()));
     }
 }
