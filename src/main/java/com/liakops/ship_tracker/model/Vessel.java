@@ -25,7 +25,7 @@ public record Vessel(
 
     }
 
-    public static Vessel from (Metadata meta){
+    public static Vessel from(Metadata meta) {
         return new Vessel(meta.mmsi(), meta.shipName().trim(), meta.latitude(), meta.longitude(), parseAisTime(meta.timeUTC()));
     }
 }

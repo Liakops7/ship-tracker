@@ -24,12 +24,12 @@ public record VesselResponse(
 
         String dateTime = athensTime.format(DISPLAY_FORMAT);
 
-        int offsetHours = athensTime.getOffset().getTotalSeconds()/3600;
+        int offsetHours = athensTime.getOffset().getTotalSeconds() / 3600;
 
         return dateTime + " UTC +" + offsetHours;
     }
 
     public static VesselResponse from(Vessel vessel) {
-        return new VesselResponse( vessel.mmsi(), vessel.name(), vessel.latitude(), vessel.longitude(), formatForAthens(vessel.lastSeen()));
+        return new VesselResponse(vessel.mmsi(), vessel.name(), vessel.latitude(), vessel.longitude(), formatForAthens(vessel.lastSeen()));
     }
 }

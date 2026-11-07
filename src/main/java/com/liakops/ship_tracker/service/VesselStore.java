@@ -1,6 +1,5 @@
 package com.liakops.ship_tracker.service;
 
-import com.liakops.ship_tracker.model.Metadata;
 import com.liakops.ship_tracker.model.Vessel;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class VesselStore {
     private final Map<Long, Vessel> vessels = new ConcurrentHashMap<>();
 
-    public void save (Vessel vessel) {
+    public void save(Vessel vessel) {
         vessels.put(vessel.mmsi(), vessel);
     }
 
@@ -23,9 +22,7 @@ public class VesselStore {
         return vessels.values();
     }
 
-    public List<Vessel> findRecent(Duration maxAge)
-
-    {
+    public List<Vessel> findRecent(Duration maxAge) {
         Instant now = Instant.now();
         Instant cutoff = now.minus(maxAge);
 

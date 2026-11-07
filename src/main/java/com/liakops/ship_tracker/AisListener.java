@@ -80,7 +80,6 @@ public class AisListener implements WebSocket.Listener {
         }
 
 
-
         // 6. Ζήτα το επόμενο μήνυμα — ΕΞΩ από το try, ώστε να γίνεται πάντα
         webSocket.request(1);
         return null;
