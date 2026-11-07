@@ -75,7 +75,7 @@ public class AisListener implements WebSocket.Listener {
                         + " — " + vessel.lastSeen());
             } else if ("ShipStaticData".equals(message.messageType())) {
                 ShipStaticData staticData = message.payload().shipStaticData();
-                System.out.println("Name: " + message.metaData().mmsi() + "Destination: " + staticData.destination().trim() + "ETA :" + staticData.eta());
+                System.out.println("MMSI: " + message.metaData().mmsi() + "Destination: " + staticData.destination().trim() + "ETA :" + staticData.eta());
             }
         } catch (DateTimeParseException | JacksonException e) {
             // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
