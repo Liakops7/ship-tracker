@@ -6,8 +6,7 @@ public class PiraeusMatcher {
             return false;
         }
         String clean = destination.toUpperCase().replaceAll("[^A-Z]", "");
-        return clean.startsWith("GRSKG")
-                || clean.contains("PIRA")
+        return clean.startsWith("GR")
                 || clean.contains("PIRAEUS")
                 || clean.contains("PIREAS");
 
