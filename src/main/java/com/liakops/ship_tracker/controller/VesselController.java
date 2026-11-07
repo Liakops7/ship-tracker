@@ -3,6 +3,7 @@ package com.liakops.ship_tracker.controller;
 
 import com.liakops.ship_tracker.model.Metadata;
 import com.liakops.ship_tracker.service.VesselStore;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
@@ -16,9 +17,10 @@ public class VesselController {
             this.vesselStore = vesselStore;
     }
 
+    @GetMapping("/vessels/aegean")
     public Collection<Metadata> getAegeanVessels(){
 
-        return java.util.List.of();
+        return vesselStore.findAll();
     }
 
 }
