@@ -1,5 +1,7 @@
 package com.liakops.ship_tracker.dto;
 
+import com.liakops.ship_tracker.model.Vessel;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -24,6 +26,16 @@ public record VesselResponse(
 
         int offsetHours = athensTime.getOffset().getTotalSeconds();
 
-        return dateTime + offsetHours;
+        return dateTime + "UTC +" + offsetHours;
+    }
+
+    public static VesselResponse from(Vessel vessel) {
+        return new VesselResponse(
+            long mmsi,
+            String name,
+            double latitude,
+            double longitude,
+            String lastSeen.formatForAthens()
+        )
     }
 }
