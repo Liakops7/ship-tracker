@@ -7,7 +7,6 @@ import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
