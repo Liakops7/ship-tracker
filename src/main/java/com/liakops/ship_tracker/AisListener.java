@@ -73,6 +73,9 @@ public class AisListener implements WebSocket.Listener {
                         + vessel.latitude() + ", " + vessel.longitude()
                         + " — " + vessel.lastSeen());
             }
+            else if ("ShipStaticData".equals(message.messageType())) {
+                System.out.println("STATIC: " + json);
+            }
         } catch (DateTimeParseException | JacksonException e) {
             // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
             // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
