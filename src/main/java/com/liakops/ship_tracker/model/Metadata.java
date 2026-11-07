@@ -11,5 +11,5 @@ public record Metadata(
     @JsonProperty("ShipName") String shipName,
     @JsonProperty("latitude") double latitude,
     @JsonProperty("longitude") double longitude,
-    @JsonProperty("time_utc") Instant timeUTC
+    @JsonProperty("time_utc") String timeUTC
 ) {}
