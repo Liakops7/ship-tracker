@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeParseException;
 import java.util.concurrent.CompletionStage;
 
 // Μπορεί να είναι inner class ή ξεχωριστή κλάση
@@ -66,19 +67,17 @@ public class AisListener implements WebSocket.Listener {
                 Metadata meta = message.metaData();
 
                 Vessel vessel = Vessel.from(meta);
+                vesselStore.save(vessel);
 
-                // 5. Τύπωσε μια καθαρή γραμμή — trim() για να φύγουν τα κενά από το όνομα
                 System.out.println(vessel.name()
                         + " (" + vessel.mmsi() + ") @ "
                         + vessel.latitude() + ", " + vessel.longitude()
                         + " — " + vessel.lastSeen());
             }
-        } catch ( NumberFormatException | JacksonException e) {
+        } catch (DateTimeParseException | JacksonException e) {
             // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
             // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
             System.out.println("Problem: " + e.getMessage());
-
-
         }
 
 
