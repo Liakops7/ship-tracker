@@ -3,9 +3,7 @@ package com.liakops.ship_tracker.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Eta(
@@ -31,5 +29,16 @@ public record Eta(
     public Instant atYear(int year) {
         return LocalDateTime.of(year, month, day, hour, minute)   // έτος από την παράμετρο, τα υπόλοιπα από τα πεδία του record
                     .toInstant(ZoneOffset.UTC);
+    }
+
+    public Instant resolve(Instant now){
+        int currentYear = now.atZone(ZoneOffset.UTC).getYear();
+
+        try {
+            return atYear(currentYear);
+        }
+        catch (DateTimeException e) {
+            return null;
+        }
     }
 }
