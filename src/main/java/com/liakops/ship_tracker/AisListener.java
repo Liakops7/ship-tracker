@@ -12,6 +12,7 @@ import tools.jackson.databind.json.JsonMapper;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.concurrent.CompletionStage;
 
@@ -86,7 +87,7 @@ public class AisListener implements WebSocket.Listener {
 
 
                 if (staticData.eta().isValid()) {
-                    System.out.println("   at 2026: " + staticData.eta().atYear(2026));
+                    System.out.println("   resolved: " + staticData.eta().resolve(Instant.now()));
                 }
             }
         } catch (DateTimeParseException | JacksonException e) {
