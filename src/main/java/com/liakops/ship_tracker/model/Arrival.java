@@ -13,6 +13,6 @@ public record Arrival(
                 meta.mmsi(),
                 meta.shipName().trim(),
                 data.destination().trim(),
-                data.eta().resolve(Instant.now()
+                eta
          );
     }}
