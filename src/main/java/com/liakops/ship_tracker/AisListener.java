@@ -85,8 +85,6 @@ public class AisListener implements WebSocket.Listener {
                 );
 
 
-                // Το atYear καλείται ΜΟΝΟ για έγκυρα ETA.
-                // Για μήνα 0 / ώρα 24 κ.λπ. θα πέταγε DateTimeException και θα έκλεινε τη σύνδεση.
                 if (staticData.eta().isValid()) {
                     System.out.println("   at 2026: " + staticData.eta().atYear(2026));
                 }
