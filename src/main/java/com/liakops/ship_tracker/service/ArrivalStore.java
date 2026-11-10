@@ -1,17 +1,17 @@
 package com.liakops.ship_tracker.service;
 
 import com.liakops.ship_tracker.model.Arrival;
-import com.liakops.ship_tracker.model.Vessel;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class ArrivalStore {
-    Map<Long, Arrival> arrivals;
+    private final Map<Long, Arrival> arrivals = new ConcurrentHashMap<>();
 
-    public void save(Arrival arrival){
+    public void save(Arrival arrival) {
         arrivals.put(arrival.mmsi(), arrival);
     }
 
