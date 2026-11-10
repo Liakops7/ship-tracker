@@ -30,6 +30,6 @@ public record VesselResponse(
     }
 
     public static VesselResponse from(Vessel vessel) {
-        return new VesselResponse(vessel.mmsi(), vessel.name(), vessel.latitude(), vessel.longitude(), formatForAthens(vessel.lastSeen()));
+        return new VesselResponse(vessel.mmsi(), vessel.name(), vessel.latitude(), vessel.longitude(), AthensTime.format(vessel.lastSeen()));
     }
 }
