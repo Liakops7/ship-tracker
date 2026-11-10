@@ -3,6 +3,7 @@ package com.liakops.ship_tracker;
 import com.liakops.ship_tracker.model.*;
 import com.liakops.ship_tracker.service.ArrivalStore;
 import com.liakops.ship_tracker.service.PiraeusMatcher;
+import com.liakops.ship_tracker.service.RawDataLogger;
 import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
@@ -21,12 +22,14 @@ public class AisListener implements WebSocket.Listener {
     private final JsonMapper mapper = JsonMapper.builder().build();
     private final VesselStore vesselStore;
     private final ArrivalStore arrivalStore;
+    private final RawDataLogger rawDataLogger;
 
-    public AisListener(String apiKey, VesselStore vesselStore, ArrivalStore arrivalStore) {
+    public AisListener(String apiKey, VesselStore vesselStore, ArrivalStore arrivalStore, RawDataLogger rawDataLogger) {
 
         this.apiKey = apiKey;
         this.vesselStore = vesselStore;
         this.arrivalStore = arrivalStore;
+        this.rawDataLogger = rawDataLogger;
     }
 
     @Override
@@ -79,15 +82,7 @@ public class AisListener implements WebSocket.Listener {
                 // Τα στατικά στοιχεία: φάκελος → φορτίο → ShipStaticData
                 ShipStaticData staticData = message.payload().shipStaticData();
 
-
-                // ΠΡΟΣΩΡΙΝΟ: τι γράφουν ως προορισμό τα πλοία της ακτοπλοΐας;
-                String shipName = message.metaData().shipName();
-                if (shipName.contains("BLUE STAR") || shipName.contains("POSEIDONAS")
-                        || shipName.contains("OKIALOS") || shipName.contains("AERO")) {
-                    System.out.println("DEBUG: " + shipName.trim()
-                            + " → [" + staticData.destination() + "] " + staticData.eta());
-                }
-
+                rawDataLogger.log(message.metaData(), staticData);
                 // Κανόνας 1: ο προορισμός είναι Πειραιάς
                 // Κανόνας 2: το ETA δεν είναι "μη διαθέσιμο" (μήνας 0, ώρα 24 κ.λπ.)
                 if (PiraeusMatcher.matches(staticData.destination())
