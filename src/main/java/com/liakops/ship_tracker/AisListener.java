@@ -3,7 +3,6 @@ package com.liakops.ship_tracker;
 import com.liakops.ship_tracker.model.*;
 import com.liakops.ship_tracker.service.ArrivalStore;
 import com.liakops.ship_tracker.service.PiraeusMatcher;
-import com.liakops.ship_tracker.service.RawDataLogger;
 import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
@@ -24,7 +23,7 @@ public class AisListener implements WebSocket.Listener {
     private final ArrivalStore arrivalStore;
     private final RawDataLogger rawDataLogger;
 
-    public AisListener(String apiKey, VesselStore vesselStore, ArrivalStore arrivalStore, RawDataLogger rawDataLogger) {
+    public AisListener(String apiKey, VesselStore vesselStore, ArrivalStore arrivalStore) {
 
         this.apiKey = apiKey;
         this.vesselStore = vesselStore;
@@ -82,7 +81,6 @@ public class AisListener implements WebSocket.Listener {
                 // Τα στατικά στοιχεία: φάκελος → φορτίο → ShipStaticData
                 ShipStaticData staticData = message.payload().shipStaticData();
 
-                rawDataLogger.log(message.metaData(), staticData);
                 // Κανόνας 1: ο προορισμός είναι Πειραιάς
                 // Κανόνας 2: το ETA δεν είναι "μη διαθέσιμο" (μήνας 0, ώρα 24 κ.λπ.)
                 if (PiraeusMatcher.matches(staticData.destination())
@@ -99,8 +97,6 @@ public class AisListener implements WebSocket.Listener {
                         // Αποθήκευση: αν υπάρχει ήδη αυτό το MMSI, το νέο αντικαθιστά το παλιό
                         arrivalStore.save(arrival);
 
-                        // Προσωρινό print για να βλέπουμε ότι δουλεύει
-                        System.out.println("ARRIVAL: " + arrival);
                     }
                 }
             }

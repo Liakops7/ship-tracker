@@ -22,19 +22,10 @@ public class ArrivalController {
     // ταξινομημένες από την πιο κοντινή
     @GetMapping("/ports/piraeus/arrivals")
     public List<ArrivalResponse> getPiraeusArrivals() {
-        return arrivalStore.findUpcoming(Duration.ofHours(48))
+        return arrivalStore.findUpcoming(Duration.ofHours(24))
                 .stream()
                 .map(ArrivalResponse::from)      // Arrival → ArrivalResponse (ETA σε ώρα Αθήνας)
                 .toList();
     }
 
-    // ΠΡΟΣΩΡΙΝΟ, μόνο για δοκιμή: ΟΛΕΣ οι αποθηκευμένες αφίξεις, χωρίς το φίλτρο των 24 ωρών.
-    // Θα το σβήσουμε πριν το merge.
-    @GetMapping("/ports/piraeus/arrivals/all")
-    public List<ArrivalResponse> getAllPiraeusArrivals() {
-        return arrivalStore.findAll()
-                .stream()
-                .map(ArrivalResponse::from)
-                .toList();
-    }
 }

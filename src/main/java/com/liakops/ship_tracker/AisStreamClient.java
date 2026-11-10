@@ -1,7 +1,6 @@
 package com.liakops.ship_tracker;
 
 import com.liakops.ship_tracker.service.ArrivalStore;
-import com.liakops.ship_tracker.service.RawDataLogger;
 import com.liakops.ship_tracker.service.VesselStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -20,12 +19,10 @@ public class AisStreamClient implements CommandLineRunner {
 
     private final VesselStore vesselStore;
     private final ArrivalStore arrivalStore;
-    private final RawDataLogger rawDataLogger;
 
-    public AisStreamClient(VesselStore vesselStore, ArrivalStore arrivalStore, RawDataLogger rawDataLogger) {
+    public AisStreamClient(VesselStore vesselStore, ArrivalStore arrivalStore) {
         this.vesselStore = vesselStore;
         this.arrivalStore = arrivalStore;
-        this.rawDataLogger = rawDataLogger;
     }
 
     @Override
@@ -44,7 +41,7 @@ public class AisStreamClient implements CommandLineRunner {
         κάποια στιγμή θα έχεις WebSocket». Με το .join() περιμένεις μέχρι
         να ανοίξει πραγματικά
         */
-        AisListener aisListener = new AisListener(apiKey, vesselStore, arrivalStore,  rawDataLogger);
+        AisListener aisListener = new AisListener(apiKey, vesselStore, arrivalStore);
         WebSocket ws = builder.buildAsync(uri, aisListener).join();
 
 
