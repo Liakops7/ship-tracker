@@ -21,14 +21,12 @@ public class AisListener implements WebSocket.Listener {
     private final JsonMapper mapper = JsonMapper.builder().build();
     private final VesselStore vesselStore;
     private final ArrivalStore arrivalStore;
-    private final RawDataLogger rawDataLogger;
 
     public AisListener(String apiKey, VesselStore vesselStore, ArrivalStore arrivalStore) {
 
         this.apiKey = apiKey;
         this.vesselStore = vesselStore;
         this.arrivalStore = arrivalStore;
-        this.rawDataLogger = rawDataLogger;
     }
 
     @Override
