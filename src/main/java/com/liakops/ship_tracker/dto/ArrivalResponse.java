@@ -10,6 +10,6 @@ public record ArrivalResponse(
         String eta
 ) {
     public static ArrivalResponse from(Arrival arrival) {
-            return new VesselResponse(arrival.mmsi(), arrival.name(), arrival.destination(), AthensTime.format(arrival.eta()));
+            return new ArrivalResponse(arrival.mmsi(), arrival.name(), arrival.destination(), AthensTime.format(arrival.eta()));
         }
 }
