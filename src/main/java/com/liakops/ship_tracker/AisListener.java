@@ -1,9 +1,6 @@
 package com.liakops.ship_tracker;
 
-import com.liakops.ship_tracker.model.AisMessage;
-import com.liakops.ship_tracker.model.Metadata;
-import com.liakops.ship_tracker.model.ShipStaticData;
-import com.liakops.ship_tracker.model.Vessel;
+import com.liakops.ship_tracker.model.*;
 import com.liakops.ship_tracker.service.ArrivalStore;
 import com.liakops.ship_tracker.service.PiraeusMatcher;
 import com.liakops.ship_tracker.service.VesselStore;
@@ -79,18 +76,28 @@ public class AisListener implements WebSocket.Listener {
                         + vessel.latitude() + ", " + vessel.longitude()
                         + " — " + vessel.lastSeen());
             } else if ("ShipStaticData".equals(message.messageType())) {
+                // Τα στατικά στοιχεία: φάκελος → φορτίο → ShipStaticData
                 ShipStaticData staticData = message.payload().shipStaticData();
-                System.out.println(
-                        message.metaData().shipName().trim()              // όνομα
-                                + ", " + staticData.destination().trim()          // προορισμός
-                                + ", " + staticData.eta()                         // ETA
-                                + ", Piraeus? " + PiraeusMatcher.matches(staticData.destination())   // ο έλεγχός μας
-                                + ", valid ETA? " + staticData.eta().isValid()
-                );
 
+                // Κανόνας 1: ο προορισμός είναι Πειραιάς
+                // Κανόνας 2: το ETA δεν είναι "μη διαθέσιμο" (μήνας 0, ώρα 24 κ.λπ.)
+                if (PiraeusMatcher.matches(staticData.destination())
+                        && staticData.eta().isValid()) {
 
-                if (staticData.eta().isValid()) {
-                    System.out.println("   resolved: " + staticData.eta().resolve(Instant.now()));
+                    // Κανόνας 3: οι 4 αριθμοί του ETA → πραγματική στιγμή, στο τρέχον έτος
+                    Instant eta = staticData.eta().resolve(Instant.now());
+
+                    // Το resolve επιστρέφει null αν η ημερομηνία δεν υπάρχει (π.χ. 31 Φεβρουαρίου)
+                    if (eta != null) {
+                        // Από τα 3 κομμάτια (φάκελος, στατικά στοιχεία, ETA) → το δικό μας Arrival
+                        Arrival arrival = Arrival.from(message.metaData(), staticData, eta);
+
+                        // Αποθήκευση: αν υπάρχει ήδη αυτό το MMSI, το νέο αντικαθιστά το παλιό
+                        arrivalStore.save(arrival);
+
+                        // Προσωρινό print για να βλέπουμε ότι δουλεύει
+                        System.out.println("ARRIVAL: " + arrival);
+                    }
                 }
             }
         } catch (DateTimeParseException | JacksonException e) {
