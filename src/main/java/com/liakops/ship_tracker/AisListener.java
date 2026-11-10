@@ -4,6 +4,7 @@ import com.liakops.ship_tracker.model.AisMessage;
 import com.liakops.ship_tracker.model.Metadata;
 import com.liakops.ship_tracker.model.ShipStaticData;
 import com.liakops.ship_tracker.model.Vessel;
+import com.liakops.ship_tracker.service.ArrivalStore;
 import com.liakops.ship_tracker.service.PiraeusMatcher;
 import com.liakops.ship_tracker.service.VesselStore;
 import tools.jackson.core.JacksonException;
@@ -22,11 +23,13 @@ public class AisListener implements WebSocket.Listener {
     private final String apiKey;
     private final JsonMapper mapper = JsonMapper.builder().build();
     private final VesselStore vesselStore;
+    private final ArrivalStore arrivalStore;
 
-    public AisListener(String apiKey, VesselStore vesselStore) {
+    public AisListener(String apiKey, VesselStore vesselStore, ArrivalStore arrivalStore) {
 
         this.apiKey = apiKey;
         this.vesselStore = vesselStore;
+        this.arrivalStore = arrivalStore;
     }
 
     @Override
