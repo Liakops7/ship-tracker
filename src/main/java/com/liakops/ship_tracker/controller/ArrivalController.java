@@ -22,7 +22,7 @@ public class ArrivalController {
     // ταξινομημένες από την πιο κοντινή
     @GetMapping("/ports/piraeus/arrivals")
     public List<ArrivalResponse> getPiraeusArrivals() {
-        return arrivalStore.findUpcoming(Duration.ofHours(24))
+        return arrivalStore.findUpcoming(Duration.ofHours(48))
                 .stream()
                 .map(ArrivalResponse::from)      // Arrival → ArrivalResponse (ETA σε ώρα Αθήνας)
                 .toList();
