@@ -13,19 +13,16 @@ public class ArrivalController {
 
     private final ArrivalStore arrivalStore;
 
-    // Constructor injection: το Spring δίνει μόνο του το ArrivalStore
     public ArrivalController(ArrivalStore arrivalStore) {
         this.arrivalStore = arrivalStore;
     }
 
-    // Οι αναμενόμενες αφίξεις στον Πειραιά τις επόμενες 24 ώρες,
-    // ταξινομημένες από την πιο κοντινή
+    // Expected arrivals at Piraeus in the next 24 hours, nearest first
     @GetMapping("/ports/piraeus/arrivals")
     public List<ArrivalResponse> getPiraeusArrivals() {
         return arrivalStore.findUpcoming(Duration.ofHours(24))
                 .stream()
-                .map(ArrivalResponse::from)      // Arrival → ArrivalResponse (ETA σε ώρα Αθήνας)
+                .map(ArrivalResponse::from)
                 .toList();
     }
-
 }

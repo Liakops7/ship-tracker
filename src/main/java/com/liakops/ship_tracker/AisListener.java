@@ -4,17 +4,15 @@ import com.liakops.ship_tracker.model.*;
 import com.liakops.ship_tracker.service.ArrivalStore;
 import com.liakops.ship_tracker.service.PiraeusMatcher;
 import com.liakops.ship_tracker.service.VesselStore;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 import java.util.concurrent.CompletionStage;
 
-// Μπορεί να είναι inner class ή ξεχωριστή κλάση
+// Receives AISStream messages and routes them to the matching store.
 public class AisListener implements WebSocket.Listener {
 
     private final String apiKey;
@@ -23,7 +21,6 @@ public class AisListener implements WebSocket.Listener {
     private final ArrivalStore arrivalStore;
 
     public AisListener(String apiKey, VesselStore vesselStore, ArrivalStore arrivalStore) {
-
         this.apiKey = apiKey;
         this.vesselStore = vesselStore;
         this.arrivalStore = arrivalStore;
@@ -33,87 +30,69 @@ public class AisListener implements WebSocket.Listener {
     public void onOpen(WebSocket webSocket) {
         System.out.println("Connected");
 
+        // Subscribe to Aegean Sea messages (must be sent within 3 seconds)
         String aegeanBox = "[ [ [35.0, 22.5], [41.0, 28.5] ] ]";
         String json = """
-                   {"APIKey": "%s", "BoundingBoxes": %s, "FilterMessageTypes": ["PositionReport", "ShipStaticData"]}
+                {"APIKey": "%s", "BoundingBoxes": %s, "FilterMessageTypes": ["PositionReport", "ShipStaticData"]}
                 """.formatted(apiKey, aegeanBox);
-        System.out.println(json.replace(apiKey, "***"));   // τυπώνει το subscription ΧΩΡΙΣ το key
+        System.out.println(json.replace(apiKey, "***")); // never log the API key
+
         webSocket.sendText(json, true);
         webSocket.request(1);
     }
 
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-        System.out.println("Status code:" + statusCode);
-        System.out.println("Reason:" + reason);
-
+        System.out.println("Status code: " + statusCode);
+        System.out.println("Reason: " + reason);
         return null;
     }
 
     @Override
     public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
-        // 1. bytes -> String (αυτό το είχες ήδη)
+        // AISStream sends JSON as binary frames
         String json = StandardCharsets.UTF_8.decode(data).toString();
 
         try {
-            // 2. String -> αντικείμενο AisMessage
-            //    "Διάβασε αυτό το JSON και φτιάξε μου ένα AisMessage"
             AisMessage message = mapper.readValue(json, AisMessage.class);
 
-            // 3. Κράτα μόνο τα μηνύματα θέσης (η επιβεβαίωση subscription δεν μας ενδιαφέρει)
-            //    Γράφουμε "PositionReport".equals(...) και όχι ανάποδα,
-            //    ώστε να μη σκάσει αν το messageType είναι null
             if ("PositionReport".equals(message.messageType())) {
-
-                // 4. Πάρε το εσωτερικό αντικείμενο με τα στοιχεία του πλοίου
-                Metadata meta = message.metaData();
-
-                Vessel vessel = Vessel.from(meta);
+                Vessel vessel = Vessel.from(message.metaData());
                 vesselStore.save(vessel);
 
                 System.out.println(vessel.name()
                         + " (" + vessel.mmsi() + ") @ "
                         + vessel.latitude() + ", " + vessel.longitude()
                         + " — " + vessel.lastSeen());
+
             } else if ("ShipStaticData".equals(message.messageType())) {
-                // Τα στατικά στοιχεία: φάκελος → φορτίο → ShipStaticData
                 ShipStaticData staticData = message.payload().shipStaticData();
+                Eta eta = staticData.eta();
 
-                // Κανόνας 1: ο προορισμός είναι Πειραιάς
-                // Κανόνας 2: το ETA δεν είναι "μη διαθέσιμο" (μήνας 0, ώρα 24 κ.λπ.)
+                // Rules 1-2: destination is Piraeus and the ETA is available
                 if (PiraeusMatcher.matches(staticData.destination())
-                        && staticData.eta().isValid()) {
+                        && eta != null && eta.isValid()) {
 
-                    // Κανόνας 3: οι 4 αριθμοί του ETA → πραγματική στιγμή, στο τρέχον έτος
-                    Instant eta = staticData.eta().resolve(Instant.now());
+                    // Rule 3: ETA in the current year (null if the date does not exist)
+                    Instant etaInstant = eta.resolve(Instant.now());
 
-                    // Το resolve επιστρέφει null αν η ημερομηνία δεν υπάρχει (π.χ. 31 Φεβρουαρίου)
-                    if (eta != null) {
-                        // Από τα 3 κομμάτια (φάκελος, στατικά στοιχεία, ETA) → το δικό μας Arrival
-                        Arrival arrival = Arrival.from(message.metaData(), staticData, eta);
-
-                        // Αποθήκευση: αν υπάρχει ήδη αυτό το MMSI, το νέο αντικαθιστά το παλιό
-                        arrivalStore.save(arrival);
-
+                    if (etaInstant != null) {
+                        arrivalStore.save(Arrival.from(message.metaData(), staticData, etaInstant));
                     }
                 }
             }
-        } catch (DateTimeParseException | JacksonException e) {
-            // Αν ένα μήνυμα είναι χαλασμένο, το λέμε και συνεχίζουμε.
-            // Χωρίς try/catch, ένα κακό μήνυμα θα έκλεινε όλη τη σύνδεση.
+        } catch (RuntimeException e) {
+            // Skip a bad message instead of closing the connection
             System.out.println("Problem: " + e.getMessage());
         }
 
-
-        // 6. Ζήτα το επόμενο μήνυμα — ΕΞΩ από το try, ώστε να γίνεται πάντα
+        // Always request the next message, even after an error
         webSocket.request(1);
         return null;
     }
 
     @Override
     public void onError(WebSocket webSocket, Throwable error) {
-        System.out.println("Error:" + error.getMessage());
-
+        System.out.println("Error: " + error.getMessage());
     }
-
 }

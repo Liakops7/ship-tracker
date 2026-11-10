@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-// Αποφασίζει αν ο δηλωμένος προορισμός ενός πλοίου είναι το λιμάνι του Πειραιά.
-// Οι κανόνες βγήκαν από πραγματικά δεδομένα (ais-raw.csv).
+// Decides whether a crew-entered destination means the port of Piraeus.
+// Rules are based on real AISStream data.
 public class PiraeusMatcher {
 
-    // Λέξεις που μπορεί να ΑΚΟΛΟΥΘΟΥΝ το λιμάνι χωρίς να είναι λιμάνι
-    // π.χ. "PIRAEUS GRE", "PIRAEUS, GREECE", "PIRAEUS ANCH"
+    // Words that may follow the port name, e.g. "PIRAEUS GRE", "PIRAEUS ANCH"
     private static final Set<String> SUFFIXES = Set.of("GR", "GRE", "GREECE", "ANCH", "ANCHORAGE");
 
     public static boolean matches(String destination) {
@@ -18,36 +17,29 @@ public class PiraeusMatcher {
             return false;
         }
 
-        // 1. "από>προς": κρατάμε μόνο ό,τι είναι μετά το τελευταίο '>'
-        //    "GRPIR>GRELE" → "GRELE",  "GR>PIR" → "PIR"
+        // "FROM>TO": keep only the part after the last '>'
         String target = destination.substring(destination.lastIndexOf('>') + 1);
 
-        // 2. Χωρίζουμε σε λέξεις: ό,τι δεν είναι γράμμα (κενό, παύλα, κόμμα, _) είναι διαχωριστικό
-        //    "HER-SER-PIR" → [HER, SER, PIR],  "PIRAEUS, GREECE" → [PIRAEUS, GREECE]
+        // Split into words on anything that is not a letter
         List<String> words = new ArrayList<>(Arrays.asList(target.toUpperCase().split("[^A-Z]+")));
-
-        // Το split αφήνει κενή "λέξη" αν το κείμενο ξεκινά με διαχωριστικό (π.χ. " HER-SER-PIR")
         words.removeIf(String::isEmpty);
 
-        // 3. Πετάμε από το ΤΕΛΟΣ τις λέξεις-συμπληρώματα
-        //    [PIRAEUS, GREECE] → [PIRAEUS]
+        // Drop trailing suffix words
         while (!words.isEmpty() && SUFFIXES.contains(words.get(words.size() - 1))) {
             words.remove(words.size() - 1);
         }
 
-        // Αν δεν έμεινε τίποτα (κενός προορισμός), δεν είναι Πειραιάς
         if (words.isEmpty()) {
             return false;
         }
 
-        // 4. Μετράει ΜΟΝΟ η τελευταία λέξη (ο τελικός προορισμός)
-        //    "PIR-CHIOS-MJT" → MJT → false (φεύγει ΑΠΟ Πειραιά)
-        //    "HER-SER-PIR"   → PIR → true  (έρχεται ΣΤΟΝ Πειραιά)
+        // Only the last word (final destination) counts:
+        // "HER-SER-PIR" -> true, "PIR-CHIOS-MJT" -> false
         String last = words.get(words.size() - 1);
 
-        return last.equals("PIR")             // κωδικός λιμανιού μόνος του ("GR PIR", "GR>PIR")
-                || last.equals("GRPIR")       // UN/LOCODE ενωμένο
-                || last.startsWith("PIRAE")   // PIRAEUS, PIRAEUSS (ορθογραφικό λάθος)
+        return last.equals("PIR")             // "GR PIR", "GR>PIR"
+                || last.equals("GRPIR")       // UN/LOCODE
+                || last.startsWith("PIRAE")   // PIRAEUS, PIRAEUSS
                 || last.startsWith("PIRE");   // PIREAS, PIREUS
     }
 }

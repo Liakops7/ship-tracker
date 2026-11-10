@@ -1,8 +1,8 @@
 package com.liakops.ship_tracker.dto;
 
 import com.liakops.ship_tracker.model.Arrival;
-import com.liakops.ship_tracker.model.Vessel;
 
+// API response for an arrival, with the ETA in Athens local time.
 public record ArrivalResponse(
         long mmsi,
         String name,
@@ -10,6 +10,11 @@ public record ArrivalResponse(
         String eta
 ) {
     public static ArrivalResponse from(Arrival arrival) {
-            return new ArrivalResponse(arrival.mmsi(), arrival.name(), arrival.destination(), AthensTime.format(arrival.eta()));
-        }
+        return new ArrivalResponse(
+                arrival.mmsi(),
+                arrival.name(),
+                arrival.destination(),
+                AthensTime.format(arrival.eta())
+        );
+    }
 }

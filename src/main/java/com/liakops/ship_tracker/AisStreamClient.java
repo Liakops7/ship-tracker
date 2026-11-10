@@ -8,9 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.WebSocket;
 
-
+// Opens the AISStream WebSocket connection when the application starts.
 @Component
 public class AisStreamClient implements CommandLineRunner {
 
@@ -26,24 +25,14 @@ public class AisStreamClient implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         URI uri = URI.create("wss://stream.aisstream.io/v0/stream");
+        AisListener listener = new AisListener(apiKey, vesselStore, arrivalStore);
 
-        // Δημιουργεί έναν client με τις προεπιλεγμένες ρυθμίσεις
-        HttpClient client = HttpClient.newHttpClient();
-
-        // Ο client δεν ανοίγει WebSocket απευθείας. Σου δίνει έναν builder,
-        // δηλαδή ένα αντικείμενο που ρυθμίζεις πριν φτιάξεις τη σύνδεση
-        WebSocket.Builder builder = client.newWebSocketBuilder();
-
-        /*Το buildAsync θέλει δύο ορίσματα: το URI και ένα αντικείμενο listener.
-        Επιστρέφει CompletableFuture<WebSocket>, δηλαδή «μια υπόσχεση ότι
-        κάποια στιγμή θα έχεις WebSocket». Με το .join() περιμένεις μέχρι
-        να ανοίξει πραγματικά
-        */
-        AisListener aisListener = new AisListener(apiKey, vesselStore, arrivalStore);
-        WebSocket ws = builder.buildAsync(uri, aisListener).join();
-
-
+        // join() waits until the connection is open
+        HttpClient.newHttpClient()
+                .newWebSocketBuilder()
+                .buildAsync(uri, listener)
+                .join();
     }
 }
