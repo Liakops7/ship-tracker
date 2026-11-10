@@ -26,7 +26,7 @@ public record Eta(
         return flag;
     }
 
-    public Instant atYear(int year) {
+    private Instant atYear(int year) {
         return LocalDateTime.of(year, month, day, hour, minute)   // έτος από την παράμετρο, τα υπόλοιπα από τα πεδία του record
                     .toInstant(ZoneOffset.UTC);
     }
