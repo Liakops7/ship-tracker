@@ -79,6 +79,15 @@ public class AisListener implements WebSocket.Listener {
                 // Τα στατικά στοιχεία: φάκελος → φορτίο → ShipStaticData
                 ShipStaticData staticData = message.payload().shipStaticData();
 
+
+                // ΠΡΟΣΩΡΙΝΟ: τι γράφουν ως προορισμό τα πλοία της ακτοπλοΐας;
+                String shipName = message.metaData().shipName();
+                if (shipName.contains("BLUE STAR") || shipName.contains("POSEIDONAS")
+                        || shipName.contains("OKIALOS") || shipName.contains("AERO")) {
+                    System.out.println("DEBUG: " + shipName.trim()
+                            + " → [" + staticData.destination() + "] " + staticData.eta());
+                }
+
                 // Κανόνας 1: ο προορισμός είναι Πειραιάς
                 // Κανόνας 2: το ETA δεν είναι "μη διαθέσιμο" (μήνας 0, ώρα 24 κ.λπ.)
                 if (PiraeusMatcher.matches(staticData.destination())
